@@ -6,9 +6,8 @@ class Commentaire{
 		private  $userID;
 		private  $articleID;
 
-		function __construct($cID, $text, $userID, $articleID){
+		function __construct( $text, $userID, $articleID){
 			
-			$this->cID=$cID;
 			$this->text=$text;
 			$this->userID=$userID;
 			$this->articleID=$articleID;

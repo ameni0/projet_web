@@ -3,13 +3,12 @@
 		private ?int $userID=null;
 		private ?string $username=null ;
 		private ?string $password=null ;
-		private ?string $role = null;
+		private ?string $role = "user";
 
-		function __construct( string $username,  string $password, string $role){
+		function __construct( string $username,  string $password){
 		
 			$this->username=$username;
 			$this->password=$password;
-			$this->role=$role;
 			
 		}
 

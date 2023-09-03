@@ -43,6 +43,19 @@ class userC{
         }
     }
     
+    public function getUsernameById($id)
+    {
+        $db=config::getConnexion();
+        try {
+            $query=$db->prepare("SELECT username FROM user WHERE userID=$id");
+            $query->execute();
+            $result=$query->fetch();
+            return $result['username'];
+        }catch(PDOException $e){
+            $e->getMessage();
+        }
+    }
+
     public function register ($user){
 
         $pdo =config::getConnexion ();
@@ -100,42 +113,48 @@ class userC{
     function login($username,$password)
 		{
 			$db = config::getConnexion();
-			$sql = "SELECT * FROM user WHERE username='" . $username . "'and password= '". $password." ' " ;
+			$sql = "SELECT * FROM user WHERE username = '$username' AND password = '$password'";
 			try
 			{
 				$query=$db->prepare($sql);
 				$query->execute();
-				$count=$query->rowCount();
 				$result = $query->fetch(PDO::FETCH_OBJ);
-				if($count==0)
-				{
-					$message="pseudo ou le mot de passe est incorrect";
-				}
-				else
-				{
-					$x=$query->fetch();
-					$message=$x['username'];
-					$_SESSION['username'] = $result->username ;
-					$_SESSION['id'] = $result->userID ;
-                    $_SESSION['role'] = $result->role ;
-					echo "$message";
+                if($result!=null)
+				return $result;
+                
+                else
+                return null;
+            }
+            catch (Exception $e)
+            {
+                die('Erreur: '.$e->getMessage());
+            }
 
-				}
-				
-
-			}
-			catch (Exception $e)
-				{
-					$message= " ".$e->getMessage();
-				}
-
-			return $message;
+			
 		}
 
     function logout(){
         session_start();
         session_destroy();
         header('location:../view/login.php');
+    }
+
+    function verif ($username){
+        $db=config::getConnexion();
+        try {
+            $query=$db->prepare("SELECT * FROM user WHERE username='$username'");
+            $query->execute();
+            $result=$query->fetchAll();
+            
+            if($result!=null)
+            return $result;
+
+            else
+            return null;
+
+        }catch(PDOException $e){
+            $e->getMessage();
+        }
     }
 
 }
