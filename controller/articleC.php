@@ -135,6 +135,21 @@ class articleC{
             $e->getMessage();
         }
     }
+
+    function getArticlesByUserID($userID) {
+        $db = config::getConnexion();
+        try {
+            $query = $db->prepare(
+                'SELECT * FROM article WHERE userID = :userID'
+            );
+            $query->execute([
+                'userID' => $userID
+            ]);
+            return $query->fetchAll();
+        } catch (PDOException $e) {
+            $e->getMessage();
+        }
+    }
 }
 
 ?>
