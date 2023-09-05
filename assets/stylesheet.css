@@ -1,5 +1,6 @@
 
         /* Add CSS styles here */
+        
         .article-list {
             display: flex;
             flex-wrap: wrap; /* Wrap items to new line if needed */
@@ -10,7 +11,7 @@
         .article-item {
             width: calc(25.33% - 20px); /* Adjust width as needed */
             margin: 40px;
-            padding: 20px;
+            padding: 120px;
             border: 1px solid #ddd;
         }
         .title{
@@ -22,6 +23,8 @@
             overflow-y: auto; /* Enable vertical scrolling if needed */
             margin: 10px; /* Add spacing above the comments */
             border-radius: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
         }
 
         .comment {
@@ -46,5 +49,51 @@
         .navbar a:hover {
             background-color: #ddd;
             color: black;
+        }
+
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .rate {
+            height: 46px;
+            padding: 0 10px;            
+        }
+        .rate:not(:checked) > input {
+            position:absolute;
+            top:-9999px;
+        }
+        .rate:not(:checked) > label {
+            float:right;
+            width:1em;
+            overflow:hidden;
+            white-space:nowrap;
+            cursor:pointer;
+            font-size:30px;
+            color:#ccc;
+        }
+        .rate:not(:checked) > label:before {
+            content: '★ ';
+        }
+        .rate > input:checked ~ label {
+            color: #ffc700;    
+        }
+        .rate:not(:checked) > label:hover,
+        .rate:not(:checked) > label:hover ~ label {
+            color: #deb217;  
+        }
+        .rate > input:checked + label:hover,
+        .rate > input:checked + label:hover ~ label,
+        .rate > input:checked ~ label:hover,
+        .rate > input:checked ~ label:hover ~ label,
+        .rate > label:hover ~ input:checked ~ label {
+            color: #c59b08;
+        }
+
+        .scrollable-comments {
+            max-height: 200px; /* Adjust the maximum height as needed */
+            overflow-y: auto;
+            border: 1px solid #ccc; /* Add a border for visual separation */
+            padding: 10px; /* Add some padding for better appearance */
         }
 

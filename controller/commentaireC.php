@@ -17,7 +17,7 @@ class commentaireC{
     }
 
     public function supprimer($id){
-        $sql="DELETE FROM commentaire WHERE commentaireID=:id";
+        $sql="DELETE FROM commentaire WHERE cID=:id";
         $db=config::getConnexion();
         $query=$db->prepare($sql);
         $query->bindValue(':id',$id);
@@ -29,7 +29,7 @@ class commentaireC{
     }
 
     public function detail($id){
-        $sql = "SELECT * FROM commentaire WHERE commentaireID =$id";
+        $sql = "SELECT * FROM commentaire WHERE cID =$id";
         $db=config::getConnexion();
         try {
             $query = $db->prepare($sql);
@@ -60,7 +60,7 @@ class commentaireC{
     }
 
     public function modifiercommentaire($commentaire, $id, $userID){
-        $sql="UPDATE commentaire SET text=:text WHERE commentaireID=:id AND userID=:userID";
+        $sql="UPDATE commentaire SET text=:text WHERE cID=:id AND userID=:userID";
         $db = config::getConnexion();
         try{
             $query=$db->prepare($sql);

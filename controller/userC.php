@@ -136,7 +136,6 @@ class userC{
     function logout(){
         session_start();
         session_destroy();
-        header('location:../view/login.php');
     }
 
     function verif ($username){
@@ -156,6 +155,47 @@ class userC{
             $e->getMessage();
         }
     }
+
+    function BanStatus($id)
+    {
+        $db = config::getConnexion();
+
+        $query = $db->prepare("SELECT status FROM user WHERE userID = :id");
+        $query->bindParam(":id", $id, PDO::PARAM_INT);
+        $query->execute();
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            $currentStatus = $result['status'];
+
+            $newStatus = ($currentStatus === 'Banned') ? 'unbanned' : 'Banned';
+
+            $updateQuery = $db->prepare("UPDATE user SET status = :newStatus WHERE userID = :id");
+            $updateQuery->bindParam(":newStatus", $newStatus, PDO::PARAM_STR);
+            $updateQuery->bindParam(":id", $id, PDO::PARAM_INT);
+            $updateQuery->execute();
+        } else {
+            die('User not found.');
+        }
+    }
+
+    public function search($search_value)
+	{
+		$sql=" SELECT * FROM user where username like '%$search_value%' ";
+
+		$db =config::getConnexion();
+
+		try{
+			$result=$db->query($sql);
+
+			return $result;
+
+		}
+		catch (Exception $e){
+			die('Erreur: '.$e->getMessage());
+		}
+	}
+
 
 }
 

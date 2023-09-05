@@ -3,6 +3,7 @@
 		private ?int $userID=null;
 		private ?string $username=null ;
 		private ?string $password=null ;
+		private ?string $status="unbanned";
 		private ?string $role = "user";
 
 		function __construct( string $username,  string $password){

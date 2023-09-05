@@ -2,6 +2,7 @@
 session_start();
 
 include_once '../controller/articleC.php';
+include_once '../controller/userC.php';
 
 if (!isset($_SESSION['username'])) {
     header("Location: login.php"); 
@@ -12,7 +13,7 @@ $articleC=new articleC();
 
 $articles = $articleC->getArticlesByUserID($_SESSION['userID']); // Replace 'user_id' with the actual session key for user ID
 
-
+$userC = new UserC();
 
 // Handle form submissions (e.g., for updating user data or deleting the account)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -27,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $userID = $_SESSION['userID'];
 
-        $articleC = new articleC();
         $path=$articleC->upload_image('../assets/articles/', $image);
         
         $article = new Article(
@@ -44,6 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (isset($_POST['deleteAccount'])) {
 
+        $userC->supprimer($_SESSION['userID']);
+        $userC->logout();
+        header('location:login.php');
+
     }
 }
 ?>
@@ -54,23 +58,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/stylesheet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	
+	<link rel="stylesheet" href="../assets/nav/css/style.css">
     <title>Profile</title>
 </head>
 <body>
 
-    <div class="navbar">
-    <?php if (isset($_SESSION['username'])) {?>
-    <a href="logout.php" class="title" style="float: right;">Logout</a>
-    <a href="profile.php" style="float: right;">Profile</a>
-    <?php } ?>
-    <a href="index.php" class="title">Home Page</a>
-    <?php if (!isset($_SESSION['username'])) {?>
-    <a href="login.php" class="title" style="float: right;">Login</a>
-    <?php } ?>
-    <a href="addArticle.php" class="title" style="float: right;">Add Article</a>
-    
-    
+    <div class="container">
+    <nav class="navbar navbar-expand-lg ftco_navbar ftco-navbar-light" id="ftco-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">Home Page</a>
+                <ul class="navbar-nav ml-auto mr-md-3">
+                    <li class="nav-item"><a href="profile.php" class="nav-link">Profile</a></li>
+                    <li class="nav-item"><a href="addArticle.php" class="nav-link">Add Article</a></li>
+                    <li class="nav-item"><a href="logout.php" class="nav-link">Logout</a></li>
+                </ul>
+        </div>
+    </nav>
+    <!-- END nav -->
 </div>
+
 
     <h1 class="title">Welcome, <?php echo $_SESSION['username']; ?>!</h2>
     <h2 class="title">These are your Articles.</h1>
@@ -116,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }?>
         </ul>
     </div>
-    
+    <div class="title">                       
     <h2>Modify Your Profile</h2>
     <form method="post">
         <!-- Add input fields for updating user data (e.g., username, email, etc.) -->
@@ -128,6 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p>Are you sure you want to delete your account? This action is irreversible.</p>
         <button type="submit" name="deleteAccount">Delete Account</button>
     </form>
+    </div>
 </body>
 <script>
 function displaySelectedImage(input) {
@@ -164,6 +176,10 @@ function displaySelectedImage(input) {
     
 </script>
 
+    <script src="../assets/nav/js/jquery.min.js"></script>
+    <script src="../assets/nav/js/popper.js"></script>
+    <script src="../assets/nav/js/bootstrap.min.js"></script>
+    <script src="../assets/nav/js/main.js"></script>
 
 
 </html>

@@ -105,9 +105,9 @@ class articleC{
     }
 
 
-    public function search($search ,$search_value)
+    public function search($search_value)
 	{
-		$sql=" SELECT * FROM article where '.$search.' like '%$search_value%' ";
+		$sql=" SELECT * FROM article where type like '%$search_value%' ";
 
 		$db =config::getConnexion();
 
@@ -127,7 +127,7 @@ class articleC{
         try {
             $db = config::getConnexion();
             $query = $db->prepare(
-                'SELECT * FROM article ORDER BY '.$tri.' ASC'
+                'SELECT * FROM article ORDER BY '.$tri.' DESC'
             );
             $query->execute();
             return $query->fetchAll();
@@ -150,6 +150,51 @@ class articleC{
             $e->getMessage();
         }
     }
+
+    function getNbArticlesByUserId($userID)
+    {
+        $db = config::getConnexion();
+        try {
+            $query = $db->prepare(
+                'SELECT COUNT(*) as articleCount FROM article WHERE userID = :userID'
+            );
+            $query->execute([
+                'userID' => $userID
+            ]);
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+            
+            // Return the count value as an associative array
+            return $result['articleCount'];
+        } catch (PDOException $e) {
+            $e->getMessage();
+        }
+    }
+
+    function getCommentsByArticleId($articleID)
+    {
+        $db = config::getConnexion();
+        try {
+            $query = $db->prepare(
+                'SELECT text FROM commentaire WHERE articleID = :articleID'
+            );
+            $query->execute([
+                'articleID' => $articleID
+            ]);
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+            if($result){
+                return $result['text'];
+            }
+            else{
+                return "No comments";
+            }
+        } catch (PDOException $e) {
+            $e->getMessage();
+        }
+    }
+   
+
+   
+
 }
 
 ?>

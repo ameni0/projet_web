@@ -2,24 +2,24 @@
 class rating{
 		private  $id;
 		private  $note;
+		private  $articleID;
 		private  $userID;
 
-		function __construct($id, $note, $userID){
+		function __construct($id, $note){
 			
 			$this->id=$id;
 			$this->note=$note;
-			$this->userID=$userID;
 
 		}
 		
 		function getid(){
 			return $this->id;
 		}
-		function getNote():string{
+		function getNote():int{
 			return $this->note;
 
         }
-	function setNote(string $note):void{
+	function setNote(int $note):void{
 			$this->note=$note;
 		}
 
