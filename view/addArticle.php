@@ -3,25 +3,62 @@
 include_once '../controller/articleC.php';
 session_start();
 
-if(isset($_POST['submit'])){
-    
-    $image = $_FILES['image'];
+$errors = [];
 
+if (isset($_POST['submit'])) {
+    $image = $_FILES['image'];
     $userID = $_SESSION['userID'];
 
-    $articleC = new articleC();
-    $path=$articleC->upload_image('../assets/articles/', $image);
     
-    $article = new Article(
-        $_POST['titre'],
-        $_POST['type'],
-        $path,
-        $_POST['description'],
-        $userID
-    );
-    $articleC->addArticle($article, $path, $userID);
+    if (empty($_POST['titre'])) {
+        $errors[] = "Title is required";
+    } elseif (strlen($_POST['titre']) > 10) {
+      $errors[] = "Title cannot be longer than 10 characters";
+    } elseif (preg_match('/[0-9]/', $_POST['titre'])) {
+        $errors[] = "Title cannot contain numbers";
+    }
 
-    header('location:addArticle.php');
+    
+    if (empty($_POST['type'])) {
+        $errors[] = "Type is required";
+    }
+
+    
+    if (empty($_POST['description'])) {
+        $errors[] = "Description is required";
+    } elseif (strlen($_POST['description']) <= 8) {
+      $errors[] = "Description must be longer than 8 characters";
+    }
+
+    
+    if (empty($image['name'])) {
+        $errors[] = "Image is required";
+    } else {
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+        $fileExtension = pathinfo($image['name'], PATHINFO_EXTENSION);
+        
+        if (!in_array(strtolower($fileExtension), $allowedExtensions)) {
+            $errors[] = "Invalid image format. Allowed formats: JPG, JPEG, PNG, GIF";
+        }
+    }
+
+    
+    if (empty($errors)) {
+        $articleC = new articleC();
+        $path = $articleC->upload_image('../assets/articles/', $image);
+
+        $article = new Article(
+            $_POST['titre'],
+            $_POST['type'],
+            $path,
+            $_POST['description'],
+            $userID
+        );
+        $articleC->addArticle($article, $path, $userID);
+
+        header('location:addArticle.php');
+        exit;
+    }
 }
 
 
@@ -79,7 +116,18 @@ if(isset($_POST['submit'])){
         <div class="col-md-7">
           <div class="form h-100 contact-wrap p-5">
             <h3 class="text-center">Add Article</h3>
-            <form class="mb-5" method="post" action="addArticle.php" id="contactForm" name="contactForm">
+
+            <?php if (!empty($errors)): ?>
+              <div class="alert alert-danger">
+                  <ul>
+                      <?php foreach ($errors as $error): ?>
+                          <li><?php echo $error; ?></li>
+                      <?php endforeach; ?>
+                  </ul>
+              </div>
+            <?php endif; ?>
+
+            <form class="mb-5" method="post" action="addArticle.php" id="contactForm" name="contactForm" enctype="multipart/form-data">
               <div class="row">
                 <div class="col-md-6 form-group mb-3">
                   <label for="" class="col-form-label">Titre *</label>
@@ -89,8 +137,9 @@ if(isset($_POST['submit'])){
                 <div class="col-md-6 form-group mb-3">
                   <label for="type" class="col-form-label">Type *</label>
                   <select class="form-control" name="type" id="type">
-                    <option value="omek">omek</option>
-                    <option value="bouk">bouk</option>
+                    <option value="Beaute">Beaute</option>
+                    <option value="Sante">Sante</option>
+                    <option value="Voyage">Voyage</option>
                   </select>
                 </div>
               </div>

@@ -59,22 +59,51 @@ class ratingC{
         }
     }
 
-    public function modifierRating($rating, $id, $articleID, $userID){
-        $sql="UPDATE rating SET note=:note WHERE id=:id AND articleID=$articleID AND userID=:userID";
+    public function modifierRating($rating, $articleID, $userID){
         $db = config::getConnexion();
-        try{
-            $query=$db->prepare($sql);
-            $query->execute([
-                'note'=>$rating, 
-                'id'=>$id,
-                'articleID'=>$articleID,
-                'userID'=>$userID
-            ]);
+    
+        // Check if a rating for this article and user already exists
+        $existingRating = $this->getRatingByArticleAndUser($articleID, $userID);
+    
+        if ($existingRating) {
+            // Update the existing rating
+            $sql = "UPDATE rating SET note=:note where articleID=:articleID and userID=:userID";
+        } else {
+            // Create a new rating
+            $sql = "INSERT INTO rating (note, articleID, userID) VALUES (:note, :articleID, :userID)";
         }
-        catch (PDOException $e){
+    
+        try {
+            $query = $db->prepare($sql);
+            $query->execute([
+                'note' => $rating,
+                'articleID' => $articleID,
+                'userID' => $userID
+            ]);
+        } catch (PDOException $e) {
             $e->getMessage();
         }
     }
+    
+    // Function to check if a rating already exists for the given article and user
+    public function getRatingByArticleAndUser($articleID, $userID) {
+        $db = config::getConnexion();
+        $sql = "SELECT * FROM rating WHERE articleID = :articleID AND userID = :userID LIMIT 1";
+    
+        try {
+            $query = $db->prepare($sql);
+            $query->execute([
+                'articleID' => $articleID,
+                'userID' => $userID
+            ]);
+    
+            return $query->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            $e->getMessage();
+            return false;
+        }
+    }
+    
     
 }
 

@@ -61,12 +61,13 @@ class userC{
         $pdo =config::getConnexion ();
         try{    
             $query =$pdo->prepare(
-         "INSERT INTO user (username, password,role) 
-        VALUES(:username,:password,:role)");
+         "INSERT INTO user (username, password, status, role) 
+        VALUES(:username,:password,:status,:role)");
        
        $query ->execute([
         'username'=>$user->getUsername(),
         'password'=>$user->getPassword(),
+        'status'=>$user->getStatus(),
         'role'=>$user->getRole()
     ]);
     
@@ -195,6 +196,47 @@ class userC{
 			die('Erreur: '.$e->getMessage());
 		}
 	}
+
+    public function tri($tri) {
+        try {
+            $db = config::getConnexion();
+            $query = $db->prepare(
+                'SELECT * FROM user ORDER BY '.$tri.' DESC'
+            );
+            $query->execute();
+            return $query->fetchAll();
+        } catch (PDOException $e) {
+            $e->getMessage();
+        }
+    }
+
+    function getUsersWithArticles()
+    {
+        try {
+        $db = config::getConnexion();
+        $query = $db->prepare("SELECT COUNT(DISTINCT userID) AS user_count FROM article");
+        $query->execute();
+        $result = $query->fetch();
+        return $result['user_count'];
+        } catch (PDOException $e) {
+            $e->getMessage();
+        }   
+     
+    }
+
+    function getUsersCount()
+    {
+        try {
+        $db = config::getConnexion();
+        $query = $db->prepare("SELECT COUNT(*) AS user_count FROM user WHERE username != 'admin'");
+        $query->execute();
+        $result = $query->fetch();
+        return $result['user_count'];
+        } catch (PDOException $e) {
+            $e->getMessage();
+        }   
+     
+    }
 
 
 }

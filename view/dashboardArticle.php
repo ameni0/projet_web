@@ -13,9 +13,13 @@ $users =$uC->afficher();
 if (isset($_GET["tri"]))
    {
     $tri=$_GET["tri"];
-    
- 
+
     $articles=$articleC->tri($tri);
+
+    if($tri=="none"){
+        $articles = $articleC->afficher();
+    }
+    
 
    }
 
@@ -91,7 +95,7 @@ if (isset($_POST["deleteC"]) && isset($_POST["commentID"])) {
                     </a>
                     <ul class="dropdown-menu dropdown-user">
                         <li class="divider"></li>
-                        <li><a href="#"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        <li><a href="logout.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
                     </ul>
                     <!-- /.dropdown-user -->
@@ -148,6 +152,16 @@ if (isset($_POST["deleteC"]) && isset($_POST["commentID"])) {
                     <input style="margin-left:240px" type="text"  placeholder="Rechercher User" aria-label="Search" aria-describedby="basic-addon2" name="recherche">   
                     <input  type="submit" name="submit" value="recherche">
                 </div>
+            </form>
+
+            <form method="get" id="triForm" style="display: inline-block; margin-left: 20px;">
+                <label for="tri">Sort by:</label>
+                <select id="tri" name="tri" onchange="submitTriForm()">
+                    <option value="none"></option>
+                    <option value="type" <?php if (isset($_GET['tri']) && $_GET['tri'] === 'type') echo 'selected'; ?>>Type</option>
+                    <option value="titre" <?php if (isset($_GET['tri']) && $_GET['tri'] === 'titre') echo 'selected'; ?>>Titre</option>
+                </select>
+                <input type="submit" style="display: none;">
             </form>
 
 
@@ -286,6 +300,10 @@ if (isset($_POST["deleteC"]) && isset($_POST["commentID"])) {
 
             
         });
+
+        function submitTriForm() {
+            document.getElementById("triForm").submit();
+        }
     </script>
 
 

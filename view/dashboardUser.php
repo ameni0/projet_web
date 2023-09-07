@@ -7,12 +7,24 @@ $uC=new userC();
 $articleC=new articleC();
 $articles = $articleC->afficher();
 $users =$uC->afficher();
+
+$filteredUsers = array_filter($users, function ($user) {
+    return $user['username'] !== 'admin';
+});
+
+
+$users = $filteredUsers;
+
 if (isset($_GET["tri"]))
    {
     $tri=$_GET["tri"];
     
  
-    $users=$uC->tri($tri);
+    $users = $uC->tri($tri);
+    $filteredUsers = array_filter($users, function ($user) {
+        return $user['username'] !== 'admin';
+    });
+    $users = $filteredUsers;
 
    }
 
@@ -22,10 +34,15 @@ if (isset($_GET["tri"]))
 if(isset($_GET['recherche']))
 {
     $search_value=$_GET["recherche"];
-    $users=$uC->search($search_value);
+    $usersData = $uC->search($search_value);
+    $users = $usersData->fetchAll(PDO::FETCH_ASSOC);
+    $filteredUsers = array_filter($users, function ($user) {
+        return $user['username'] !== 'admin';
+    });
+    $users = $filteredUsers;
 }
 
-if(isset($_POST['sumbit'])||isset($_POST['sumbit1']))
+if(isset($_POST['ban'])||isset($_POST['unban']))
 {
     $userID=$_POST['userID'];
     $uC->BanStatus($userID);
@@ -79,7 +96,7 @@ if(isset($_POST['sumbit'])||isset($_POST['sumbit1']))
                     </a>
                     <ul class="dropdown-menu dropdown-user">
                         <li class="divider"></li>
-                        <li><a href="#"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        <li><a href="logout.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
                     </ul>
                     <!-- /.dropdown-user -->
@@ -138,12 +155,22 @@ if(isset($_POST['sumbit'])||isset($_POST['sumbit1']))
                 </div>
             </form>
 
+            <form method="get" id="triForm" style="display: inline-block; margin-left: 20px;">
+                <label for="tri">Sort by:</label>
+                <select id="tri" name="tri" onchange="submitTriForm()">
+                    <option value="none"></option>
+                    <option value="usernam" <?php if (isset($_GET['tri']) && $_GET['tri'] === 'username') echo 'selected'; ?>>username</option>
+                    
+                </select>
+                <input type="submit" style="display: none;">
+            </form>
+
 
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover">
                 <thead>
                     <tr> 
-                        <th>Titre</th>
+                        <th>Username</th>
                         <th>Number of Articles</th>
                         <th>Status</th>
                     </tr>
@@ -169,7 +196,7 @@ if(isset($_POST['sumbit'])||isset($_POST['sumbit1']))
                                                             
             ?>
             <form method="POST" >
-            <input type="submit" name="sumbit1" value="UnBan">
+            <input type="submit" name="unban" value="UnBan">
             <input type="hidden" name="userID" value="<?php echo $u ['userID'];?>">
             </form>
             
@@ -178,7 +205,7 @@ if(isset($_POST['sumbit'])||isset($_POST['sumbit1']))
             else{
             ?>
             <form method="POST" >
-                <input type="submit" name="sumbit" value="Ban">
+                <input type="submit" name="ban" value="Ban">
                 <input type="hidden" name="userID" value="<?php echo $u ['userID'];?>">
             <?php }?>
             </form>
@@ -218,6 +245,13 @@ if(isset($_POST['sumbit'])||isset($_POST['sumbit1']))
     <script src="../assets/js/morris/morris.js"></script>
     <!-- Custom Js -->
     <script src="../assets/js/custom-scripts.js"></script>
+
+    <script>
+        function submitTriForm() {
+            document.getElementById("triForm").submit();
+        }
+    </script>
+        
 
 
 </body>

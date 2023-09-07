@@ -7,25 +7,41 @@
     }
    
     if (isset($_POST["username"]) && isset($_POST["password"]) && isset($_POST["confirm-password"])) {
-        if (!empty($_POST["username"])&& !empty($_POST["password"]) && isset($_POST["confirm-password"])){
-            $user=new user(
-                $_POST['username'],
-                $_POST['password']
-                );
-            $userC = new UserC();
-
-            if($userC->verif($_POST["username"])==null){
-                
-                $userC->register($user);
-
-                header("Location: login.php");
-                
-            }else{
-                $error="Username or password incorrect";
-            }
-            
-        }
-    }
+		$username = $_POST["username"];
+		$password = $_POST["password"];
+		$confirmPassword = $_POST["confirm-password"];
+	
+		if (empty($username)) {
+			$errors[] = "Username is required";
+		} elseif (strlen($username) < 8) {
+			$errors[] = "Username must be at least 8 characters long";
+		}
+	
+		if (empty($password)) {
+			$errors[] = "Password is required";
+		} elseif (strlen($password) < 8) {
+			$errors[] = "Password must be at least 8 characters long";
+		}
+	
+		if ($password !== $confirmPassword) {
+			$errors[] = "Passwords do not match";
+		}
+	
+		if (empty($errors)) {
+			
+			$user = new user($username, $password);
+			$userC = new UserC();
+	
+			if ($userC->verif($username) == null) {
+				$userC->register($user);
+				header("Location: login.php");
+				exit; 
+			} else {
+				$errors[] = "Username already exists";
+			}
+		}
+	}
+	
 
 ?>
 
@@ -67,6 +83,16 @@
 					<span class="login100-form-title p-b-49">
 						Sign Up
 					</span>
+					
+					<?php if (!empty($errors)): ?>
+						<div class="alert alert-danger">
+							<ul>
+								<?php foreach ($errors as $error): ?>
+									<li><?php echo $error; ?></li>
+								<?php endforeach; ?>
+							</ul>
+						</div>
+					<?php endif; ?>
 
 					<div class="wrap-input100 validate-input m-b-23" data-validate = "Username is reauired">
 						<span class="label-input100">Username</span>
@@ -99,7 +125,7 @@
 
 					<div class="txt1 text-center p-t-54 p-b-20">
 						<span>
-							<a href="login.php">Log In</a>
+							<a href="login.php">Already have an account? Log In here.</a>
 						</span>
 					</div>
 

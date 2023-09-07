@@ -104,7 +104,7 @@
 
 					<div class="txt1 text-center p-t-54 p-b-20">
 						<span>
-							<a href="register.php">Or Sign Up Using </a>
+							<a href="register.php">Don't have an account ? Sign Up Here.</a>
 						</span>
 					</div>
 

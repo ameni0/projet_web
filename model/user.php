@@ -30,6 +30,10 @@
 			return $this->role;
 		}
 
+		function getStatus(): string{
+			return $this->status;
+		}
+
 
 		function setUsername(string $username): void{
 			$this->username=$username;
@@ -37,6 +41,10 @@
 
 		function setRole(string $role): void{
 			$this->role=$role;
+		}
+
+		function setStatus(string $status): void{
+			$this->status=$status;
 		}
 
 	}
